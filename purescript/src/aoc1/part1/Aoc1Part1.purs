@@ -15,14 +15,17 @@ import Node.FS.Sync (readTextFile)
 getInput :: Effect String
 getInput = readTextFile UTF8 "src/aoc1/part1/aoc1part1.txt"
 
-groupInput :: String -> Array String
-groupInput = split (Pattern "\n\n")
+groupInput :: String -> Array (Array String)
+groupInput input = split (Pattern "\n") <$> split (Pattern "\n\n") input
 
-getCalories :: Array String -> Array Int
+getCalories :: Array (Array String) -> Array Int
 getCalories calories = countCalories <$> calories
   where
-  countCalories :: String -> Int
-  countCalories c = sum $ fromMaybe 0 <$> (fromString <$> (split (Pattern "\n") c))
+  parseCalorie :: String -> Int
+  parseCalorie = fromMaybe 0 <<< fromString
+
+  countCalories :: Array String -> Int
+  countCalories c = sum $ parseCalorie <$> c
 
 solution :: Effect Int
 solution = do
