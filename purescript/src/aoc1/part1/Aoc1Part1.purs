@@ -4,10 +4,13 @@ module Aoc1Part1
 
 import Prelude
 
-import Data.Foldable (maximum, sum)
+import Data.Array (reverse, sort, take)
+import Data.Foldable (sum)
 import Data.Int (fromString)
 import Data.Maybe (fromMaybe)
 import Data.String (Pattern(..), split)
+import Data.Tuple (Tuple)
+import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Node.Encoding (Encoding(..))
 import Node.FS.Sync (readTextFile)
@@ -27,7 +30,13 @@ getCalories calories = countCalories <$> calories
   countCalories :: Array String -> Int
   countCalories c = sum $ parseCalorie <$> c
 
-solution :: Effect Int
+sumTopN :: Int -> Array Int -> Int
+sumTopN n arr = sum $ take n arr
+
+sortInput :: String -> Array Int
+sortInput = groupInput >>> getCalories >>> sort >>> reverse
+
+solution :: Effect (Tuple Int Int)
 solution = do
-  input <- getInput
-  input # groupInput # getCalories # maximum # fromMaybe 0 # pure
+  i <- getInput
+  pure $ (sumTopN 1 $ sortInput i) /\ (sumTopN 3 $ sortInput i)
