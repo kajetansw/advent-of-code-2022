@@ -1,4 +1,4 @@
-module Aoc1Part1
+module Aoc1
   ( solution
   ) where
 
@@ -16,7 +16,7 @@ import Node.Encoding (Encoding(..))
 import Node.FS.Sync (readTextFile)
 
 getInput :: Effect String
-getInput = readTextFile UTF8 "src/aoc1/part1/aoc1part1.txt"
+getInput = readTextFile UTF8 "src/aoc1/aoc1.txt"
 
 groupInput :: String -> Array (Array String)
 groupInput input = split (Pattern "\n") <$> split (Pattern "\n\n") input
