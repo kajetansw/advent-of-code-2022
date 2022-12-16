@@ -9,4 +9,7 @@ import Effect.Console (log)
 main :: Effect Unit
 main = do
   aoc1Solution <- Aoc1.solution
-  log $ "Solution #1: " <> show aoc1Solution
+  log $ logSolution 1 $ show aoc1Solution
+
+logSolution :: Int -> String -> String
+logSolution n s = "Day #" <> show n <> ":\n" <> show s <> "\n"
