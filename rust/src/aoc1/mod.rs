@@ -1,18 +1,15 @@
 use std::fs;
-use std::io::Error;
 
 pub fn aoc1() -> (String, String) {
-  let input = get_input();
-  let calories_per_elf = input.map(input_to_calories);
-  let max_calorie_value = calories_per_elf
-    .map(|val| val.into_iter().max().unwrap_or(0))
-    .unwrap_or(0);
+  let input = fs::read_to_string("src/aoc1/aoc1.txt").unwrap();
 
-  (max_calorie_value.to_string(), String::from("Solution 1-2"))
-}
+  let mut calories_per_elf = input_to_calories(input);
+  calories_per_elf.sort_by(|a, b| b.cmp(a));
 
-fn get_input() -> Result<String, Error> {
-  fs::read_to_string("src/aoc1/aoc1.txt")
+  let max_calorie_value: i64 = calories_per_elf.iter().take(1).sum();
+  let sum_of_first_3: i64 = calories_per_elf.iter().take(3).sum();
+
+  (max_calorie_value.to_string(), sum_of_first_3.to_string())
 }
 
 fn input_to_calories(input: String) -> Vec<i64> {
