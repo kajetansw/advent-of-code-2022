@@ -43,13 +43,16 @@ instance orderHandShape :: Ord HandShape where
 solution :: Effect (Tuple Int Int)
 solution = do
   i <- getInput
-  pure $ (sum $ inputToScoreCount i) /\ 1
+  pure $ (sum $ inputToScoreCount i) /\ (sum $ inputToScoreCount2 i)
 
 getInput :: Effect String
 getInput = readTextFile UTF8 "src/aoc2/aoc2.txt"
 
 inputToScoreCount :: String -> Array Int
 inputToScoreCount = split (Pattern "\n") >>> map toCode >>> map toScore >>> catMaybes >>> map countPoints
+
+inputToScoreCount2 :: String -> Array Int
+inputToScoreCount2 = split (Pattern "\n") >>> map toCode >>> map toScore2 >>> catMaybes >>> map countPoints
 
 toCode :: String -> Tuple String String
 toCode s = case scoreTuple of
@@ -71,6 +74,37 @@ toScore (s1 /\ s2) = case (toHandShape s1 /\ toHandShape s2) of
     "X" -> Just Rock
     "Y" -> Just Paper
     "Z" -> Just Scissors
+    _ -> Nothing
+
+toScore2 :: Tuple String String -> Maybe Score
+toScore2 (s1 /\ s2) = case (toOpponentsHandShape s1 /\ toMyHandShape s1 s2) of
+  Just hs1 /\ Just hs2 -> Just { opponents: hs1, mine: hs2 }
+  _ -> Nothing
+  where
+  toOpponentsHandShape :: String -> Maybe HandShape
+  toOpponentsHandShape s = case s of
+    "A" -> Just Rock
+    "B" -> Just Paper
+    "C" -> Just Scissors
+    _ -> Nothing
+
+  toMyHandShape :: String -> String -> Maybe HandShape
+  toMyHandShape opponents result = case result of
+    "X" -> case opponents of -- lose
+      "A" -> Just Scissors
+      "B" -> Just Rock
+      "C" -> Just Paper
+      _ -> Nothing
+    "Y" -> case opponents of -- draw
+      "A" -> Just Rock
+      "B" -> Just Paper
+      "C" -> Just Scissors
+      _ -> Nothing
+    "Z" -> case opponents of -- win
+      "A" -> Just Paper
+      "B" -> Just Scissors
+      "C" -> Just Rock
+      _ -> Nothing
     _ -> Nothing
 
 countPoints :: Score -> Int
